@@ -20,10 +20,10 @@ MQ = MessageQueue()
 
 
 def parse_rec(inp,cli):
-    cmd_lst = inp.split()
+    cmd_lst = inp.split(' ')
     cmd_type, cmd_args = cmd_lst[0], cmd_lst[1:]
     if cmd_type == "reg":
-        rsd = userSt.register(*cmd_args)
+        rsd = userSt.register(*cmd_args[:2],' '.join(cmd_args[2:]))
         if rsd:
             return "registered!"
         else:
@@ -50,7 +50,9 @@ def parse_rec(inp,cli):
         msglist = MQ.get_messages(username)
         if len(msglist) == 0:
             return 'No message found'
-        return '\n'.join([msg.decode() for msg in msglist])
+        return b'[split_msg]'.join(msglist)
+    elif cmd_type == "getPubKey":
+        return userSt.get_pub_key(*cmd_args)
     return "Received！"
 
 
@@ -67,11 +69,14 @@ def recv_inc_conn():
 def handle_client(client):
     t = 0
     while True:
-        cmd = client.recv(1024).decode()
+        cmd = client.recv(2048).decode()
         print(cmd)
         r = parse_rec(cmd,client)
         print(r)
-        client.send(r.encode())
+        if type(r) == str:
+            client.send(r.encode())
+        else:
+            client.send(r)
         t += 1
 
 

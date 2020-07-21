@@ -17,6 +17,8 @@ class MessageQueue(object):
         msgs = []
         if msg_count == 0:
             return msgs
+        elif msg_count > 5:
+            msg_count = 5
         with self.red.pipeline() as pipeline:
             for _ in range(msg_count):
                 msgs.append(self.red.lpop(user_id))

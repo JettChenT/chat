@@ -38,3 +38,11 @@ class userStore(object):
         if self.red.hexists(user_id, "username"):
             return True
         return False
+
+    def get_pub_key(self, username):
+        user_id = sha1(username.encode()).hexdigest()
+        if not self.red.hexists(user_id, "username"):
+            return 'user does not exist'
+        pub_key = self.red.hget(user_id,'pub_key')
+        return pub_key
+
