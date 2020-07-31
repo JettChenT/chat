@@ -5,6 +5,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto import Random
 from codecs import encode
 
+
 def new_keys(keysize):
     random_generator = Random.new().read
     key = RSA.generate(keysize, random_generator)
@@ -32,17 +33,20 @@ def get_key(file_url):
     new_key = import_key(k)
     return new_key
 
+
 class Executer(object):
-    def __init__(self,address):
+    def __init__(self, address):
         self.RECEIVE_SIZE = 10240
-        self.s = socket.socket(s = socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect(address)
+        self.s.recv(self.RECEIVE_SIZE)
         self.public_key_store = {}
         self.private_key_store = {}
-        self.username=""
-    def process_input(self,inp):
+        self.username = ""
+
+    def exec_(self, inp):
         cmd_lst = inp.split()
-        cmd_type, cmd_args = cmd_lst[0],cmd_lst[1:]
+        cmd_type, cmd_args = cmd_lst[0], cmd_lst[1:]
         if cmd_type == "reg":
             public_key, private_key = new_keys(2048)
             public_key_export, private_key_export = public_key.exportKey(), private_key.exportKey()
@@ -51,7 +55,7 @@ class Executer(object):
             inp += public_key_export
             with open(f'keys/private/{cmd_args[0]}.key', 'wb') as f:
                 f.write(private_key_export)
-            s.send(inp)
+            self.s.send(inp)
         elif cmd_type == "send":
             username = cmd_args[0]
             message = ' '.join(cmd_args[1:])
@@ -73,17 +77,15 @@ class Executer(object):
             send_command = f'send {username} {encrypted_msg}'
             self.s.send(send_command.encode())
         elif cmd_type == 'login':
-            cur_username = cmd_args[0]
-            print(f"Username:{cur_username}")
+            self.username = cmd_args[0]
             self.s.send(inp.encode())
         elif cmd_type == "getMsg":
             if self.username == '':
-                print("login first!")
-                return
+                return "login first!"
             self.s.send(inp.encode())
             msgs = self.s.recv(self.RECEIVE_SIZE)
             if msgs == b'No message found':
-                print(msgs)
+                return msgs
             msg_list = msgs.split(b'[split_msg]')
             if self.username in self.private_key_store:
                 priv_key = self.private_key_store[self.username]
@@ -92,14 +94,15 @@ class Executer(object):
                 self.private_key_store[self.username] = priv_key
 
             decrypted_msg_list = []
-            cnt = 1
             for msg in msg_list:
                 utf8_raw_encoded = encode(msg[2:-1].decode('unicode_escape'), 'raw_unicode_escape')
                 decrypted_msg = decrypt(utf8_raw_encoded, priv_key)
-                print(f'{cnt}) {decrypted_msg}')
                 decrypted_msg_list.append(decrypted_msg)
-                cnt += 1
-            return
+            return decrypted_msg_list
         else:
             self.s.send(inp.encode())
         resp = self.s.recv(self.RECEIVE_SIZE)
+        return resp.decode()
+
+    def not_logged_in(self) -> bool:
+        return self.username==""
