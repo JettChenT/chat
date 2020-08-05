@@ -50,6 +50,7 @@ class LoginForm(QWidget):
         self.tab1.setLayout(layout1)
         # tab 2
         button_register = QPushButton('register')
+        button_register.clicked.connect(self.register)
         layout2.addWidget(button_register,2,0,1,2)
         self.tab2.setLayout(layout2)
 
@@ -57,17 +58,26 @@ class LoginForm(QWidget):
         self.setLayout(self.layout)
 
     def login(self):
-        r = self.server_exec.exec_(f"login {self.login_username.text()} {self.login_password.text()}")
+        while True:
+            r = self.server_exec.exec_(f"login {self.login_username.text()} {self.login_password.text()}")
+            if r == False:
+                continue
+            msg = QMessageBox()
+            msg.setText(r)
+            if r == "You're logged in!":
+                msg.setIcon(QMessageBox.Information)
+                msg.exec_()
+                self.close()
+            else:
+                msg.setIcon(QMessageBox.Critical)
+                msg.exec_()
+            break
+
+    def register(self):
+        r = self.server_exec.exec_(f"reg {self.register_username.text()} {self.register_password.text()}")
         msg = QMessageBox()
         msg.setText(r)
-        if r == "You're logged in!":
-            msg.setIcon(QMessageBox.Information)
-            msg.exec_()
-            self.close()
-        else:
-            msg.setIcon(QMessageBox.Critical)
-            msg.exec_()
-
+        msg.exec_()
 
 class ChatWindow(QWidget):
     def __init__(self, server_exec):
@@ -82,10 +92,18 @@ class ChatWindow(QWidget):
     def initUI(self):
         self.text_area = QTextEdit(self)
         self.text_area.setFocusPolicy(Qt.NoFocus)
+        self.text_area.setReadOnly(True)
+        self.text_area.setAutoFormatting(QTextEdit.AutoAll)
         self.message = QLineEdit(self)
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(self.text_area)
-        self.layout.addWidget(self.message)
+        self.message.setPlaceholderText("Enter your message")
+        self.layout = QGridLayout(self)
+        self.layout.addWidget(self.text_area,0,0,1,3)
+        self.to_user = QLineEdit(self)
+        self.to_user.setPlaceholderText("Username")
+        self.layout.addWidget(self.to_user,1,0)
+        self.layout.addWidget(self.message,1,1)
+        self.layout.setColumnStretch(1,3)
+        self.layout.setColumnStretch(0,1)
         self.setLayout(self.layout)
         self.message.returnPressed.connect(self.send_message)
         thread = Thread(target=self.fetch_new_messages, daemon=True)
@@ -96,9 +114,21 @@ class ChatWindow(QWidget):
             print("log in first!")
             self.not_logged_in_popup()
         else:
-            self.server_exec.exec_(self.message.text())
-            self.message.clear()
-            print(f"{self.server_exec.username}:sent!")
+            while True:
+                r = self.server_exec.exec_(f"send {self.to_user.text()} {self.message.text()}")
+                if r == False:
+                    print("opps")
+                    continue
+                html_resp = f"[to <i>{self.to_user.text()}</i>]:{self.message.text()}"
+                self.message.clear()
+                print(f"{self.server_exec.username}:sent!")
+                tc = self.text_area.textCursor()
+                form = tc.charFormat()
+                form.setForeground(Qt.green)
+                tc.setCharFormat(form)
+                tc.insertHtml(html_resp)
+                self.text_area.append("")
+                break
 
     def not_logged_in_popup(self):
         msg = QMessageBox(self)
@@ -109,17 +139,22 @@ class ChatWindow(QWidget):
 
     def display_new_messages(self):
         while len(self.MQ):
-            self.text_area.append(self.MQ.pop(0))
+            self.text_area.textCursor().insertHtml(self.MQ.pop(0))
+            self.text_area.append("")
 
     def fetch_new_messages(self):
         while True:
-            new_message = self.server_exec.exec_("getMsg")
-            if type(new_message) == list:
-                for msg in new_message:
-                    decoded_msg = msg.decode()
-                    print(decoded_msg)
-                    self.MQ.append(decoded_msg)
-            sleep(0.5)
+            try:
+                new_message = self.server_exec.exec_("getMsg")
+                print(new_message)
+                if type(new_message) == list:
+                    for msg in new_message:
+                        decoded_msg = msg.decode()
+                        print(decoded_msg)
+                        self.MQ.append(decoded_msg)
+                sleep(0.5)
+            except:
+                continue
 
 
 class MainWindow(QMainWindow):

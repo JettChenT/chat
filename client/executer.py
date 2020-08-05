@@ -24,6 +24,7 @@ def encrypt(msg, pkey):
 
 def decrypt(ciphertext, priv_key):
     cipher = PKCS1_OAEP.new(priv_key)
+    print(ciphertext)
     return cipher.decrypt(ciphertext)
 
 
@@ -42,12 +43,42 @@ class Executer(object):
         self.s.recv(self.RECEIVE_SIZE)
         self.public_key_store = {}
         self.private_key_store = {}
+        self.send_que = []
+        self.check_for_messages=False
+        self.executing = False
         self.username = ""
 
     def exec_(self, inp):
         cmd_lst = inp.split()
+        print(cmd_lst)
+        if self.executing:
+            return False
+        self.executing = True
         cmd_type, cmd_args = cmd_lst[0], cmd_lst[1:]
-        if cmd_type == "reg":
+        if cmd_type == "getMsg":
+            if self.check_for_messages == False:
+                self.executing = False
+                return b'Not checking for messages...'
+            if self.username == '':
+                self.executing = False
+                return "login first!"
+            self.s.send(inp.encode())
+            msgs = self.s.recv(self.RECEIVE_SIZE)
+            if msgs == b'No message found':
+                self.executing = False
+                return msgs
+            if self.username in self.private_key_store:
+                priv_key = self.private_key_store[self.username]
+            else:
+                priv_key = get_key(f'keys/private/{self.username}.key')
+                self.private_key_store[self.username] = priv_key
+            decrypted_msg_list=[]
+            utf8_raw_encoded = encode(msgs[2:-1].decode('unicode_escape'), 'raw_unicode_escape')
+            decrypted_msg = decrypt(utf8_raw_encoded, priv_key)
+            decrypted_msg_list.append(decrypted_msg)
+            self.executing = False
+            return decrypted_msg_list
+        elif cmd_type == "reg":
             public_key, private_key = new_keys(2048)
             public_key_export, private_key_export = public_key.exportKey(), private_key.exportKey()
             inp = inp.encode()
@@ -57,6 +88,7 @@ class Executer(object):
                 f.write(private_key_export)
             self.s.send(inp)
         elif cmd_type == "send":
+            self.check_for_messages=False
             username = cmd_args[0]
             message = ' '.join(cmd_args[1:])
             pub_key = b''
@@ -73,35 +105,20 @@ class Executer(object):
                     f.write(pub_key)
                 self.public_key_store[username] = pub_key
             pub_key = import_key(pub_key)
+            message = f"[<i>{self.username}</i>]:"+message
             encrypted_msg = encrypt(message.encode(), pub_key)
             send_command = f'send {username} {encrypted_msg}'
             self.s.send(send_command.encode())
         elif cmd_type == 'login':
+            self.check_for_messages=False
             self.username = cmd_args[0]
             self.s.send(inp.encode())
-        elif cmd_type == "getMsg":
-            if self.username == '':
-                return "login first!"
-            self.s.send(inp.encode())
-            msgs = self.s.recv(self.RECEIVE_SIZE)
-            if msgs == b'No message found':
-                return msgs
-            msg_list = msgs.split(b'[split_msg]')
-            if self.username in self.private_key_store:
-                priv_key = self.private_key_store[self.username]
-            else:
-                priv_key = get_key(f'keys/private/{self.username}.key')
-                self.private_key_store[self.username] = priv_key
-
-            decrypted_msg_list = []
-            for msg in msg_list:
-                utf8_raw_encoded = encode(msg[2:-1].decode('unicode_escape'), 'raw_unicode_escape')
-                decrypted_msg = decrypt(utf8_raw_encoded, priv_key)
-                decrypted_msg_list.append(decrypted_msg)
-            return decrypted_msg_list
         else:
+            self.check_for_messages=False
             self.s.send(inp.encode())
         resp = self.s.recv(self.RECEIVE_SIZE)
+        self.check_for_messages=True
+        self.executing = False
         return resp.decode()
 
     def not_logged_in(self) -> bool:
