@@ -4,11 +4,13 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from threading import Thread
 from time import sleep
+from passwordStrength import PasswordStrengthChecker
 import sys
 
 class LoginForm(QWidget):
     def __init__(self, server_exec):
         super().__init__()
+        self.pwc = PasswordStrengthChecker()
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.server_exec = server_exec
         self.title = "Login/Register"
@@ -74,10 +76,17 @@ class LoginForm(QWidget):
             break
 
     def register(self):
-        r = self.server_exec.exec_(f"reg {self.register_username.text()} {self.register_password.text()}")
-        msg = QMessageBox()
-        msg.setText(r)
-        msg.exec_()
+        is_secure, rsp = self.pwc.is_secure(self.register_password.text())
+        if is_secure:
+            r = self.server_exec.exec_(f"reg {self.register_username.text()} {self.register_password.text()}")
+            msg = QMessageBox()
+            msg.setText(r)
+            msg.exec_()
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(rsp)
+            msg.exec_()
 
 class ChatWindow(QWidget):
     def __init__(self, server_exec):
@@ -105,29 +114,39 @@ class ChatWindow(QWidget):
         self.layout.setColumnStretch(1,3)
         self.layout.setColumnStretch(0,1)
         self.setLayout(self.layout)
-        self.message.returnPressed.connect(self.send_message)
+        self.message.returnPressed.connect(self.send_message_thread)
         thread = Thread(target=self.fetch_new_messages, daemon=True)
         thread.start()
+
+    def send_message_thread(self):
+        sendThread = Thread(target=self.send_message)
+        sendThread.start()
 
     def send_message(self):
         if self.server_exec.not_logged_in():
             print("log in first!")
             self.not_logged_in_popup()
         else:
+            html_resp = f"[to <i>{self.to_user.text()}</i>]:{self.message.text()}"
+            tc = self.text_area.textCursor()
+            form = tc.charFormat()
+            form.setForeground(Qt.green)
+            tc.setCharFormat(form)
+            tc.insertHtml(html_resp)
+            self.text_area.append("")
+            send_msg = self.message.text()
+            self.message.clear()
+            self.message.setPlaceholderText("Sending...")
+            self.message.setFocusPolicy(Qt.NoFocus)
             while True:
-                r = self.server_exec.exec_(f"send {self.to_user.text()} {self.message.text()}")
+                r = self.server_exec.exec_(f"send {self.to_user.text()} {send_msg}")
                 if r == False:
                     print("opps")
                     continue
-                html_resp = f"[to <i>{self.to_user.text()}</i>]:{self.message.text()}"
-                self.message.clear()
+                self.message.setPlaceholderText("Enter your message")
+                self.message.setFocusPolicy(Qt.ClickFocus)
                 print(f"{self.server_exec.username}:sent!")
-                tc = self.text_area.textCursor()
-                form = tc.charFormat()
-                form.setForeground(Qt.green)
-                tc.setCharFormat(form)
-                tc.insertHtml(html_resp)
-                self.text_area.append("")
+                sleep(0.1)
                 break
 
     def not_logged_in_popup(self):
