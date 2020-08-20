@@ -1,5 +1,6 @@
 import socket
 import os
+import json
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto import Random
@@ -36,17 +37,24 @@ def get_key(file_url):
 
 
 class Executer(object):
-    def __init__(self, address):
+    def __init__(self, address, alias_url="alias.json"):
         self.RECEIVE_SIZE = 10240
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect(address)
         self.s.recv(self.RECEIVE_SIZE)
+        self.alias_url = alias_url
+        with open(alias_url,'r') as f:
+            self.aliasDict = json.load(f)
         self.public_key_store = {}
         self.private_key_store = {}
         self.send_que = []
         self.check_for_messages=False
         self.executing = False
         self.username = ""
+
+    def store_alias(self,aliasStr):
+        alias1,alias2 = aliasStr.split('/')
+        self.aliasDict[self.username][alias2] = alias1
 
     def exec_(self, inp):
         cmd_lst = inp.split()
@@ -75,6 +83,17 @@ class Executer(object):
             decrypted_msg_list=[]
             utf8_raw_encoded = encode(msgs[2:-1].decode('unicode_escape'), 'raw_unicode_escape')
             decrypted_msg = decrypt(utf8_raw_encoded, priv_key)
+            pi = 0
+            for i in range(len(decrypted_msg)):
+                if decrypted_msg[i:i+1] == b']':
+                    pi = i
+                    break
+            sender_alias, my_alias = decrypted_msg[1:pi].split(b':')
+            sender_alias, my_alias = map(lambda x: x.decode(),[sender_alias,my_alias])
+            print(sender_alias,my_alias)
+            if self.username not in self.aliasDict:
+                self.aliasDict[self.username] = {}
+            self.aliasDict[self.username][sender_alias] = my_alias
             decrypted_msg_list.append(decrypted_msg)
             self.executing = False
             return decrypted_msg_list
@@ -91,7 +110,6 @@ class Executer(object):
             self.check_for_messages=False
             username = cmd_args[0]
             message = ' '.join(cmd_args[1:])
-            pub_key = b''
             if username in self.public_key_store:
                 pub_key = self.public_key_store[username]
             elif os.path.exists(f'keys/public/{username}.key'):
@@ -105,14 +123,30 @@ class Executer(object):
                     f.write(pub_key)
                 self.public_key_store[username] = pub_key
             pub_key = import_key(pub_key)
-            message = f"[<i>{self.username}</i>]:"+message
+            print(self.aliasDict)
+            my_alias = self.aliasDict[self.username][username]
+            message = f"[{my_alias}:{username}]:"+message
             encrypted_msg = encrypt(message.encode(), pub_key)
             send_command = f'send {username} {encrypted_msg}'
             self.s.send(send_command.encode())
         elif cmd_type == 'login':
-            self.check_for_messages=False
-            self.username = cmd_args[0]
             self.s.send(inp.encode())
+            resp = self.s.recv(self.RECEIVE_SIZE).decode()
+            if resp == "You're logged in!":
+                self.username = cmd_args[0]
+            self.check_for_messages = True
+            self.executing = False
+            return resp
+        elif cmd_type == 'match':
+            self.s.send(inp.encode())
+            resp = self.s.recv(self.RECEIVE_SIZE).decode()
+            alias1,alias2 = resp.split('/')
+            if self.username not in self.aliasDict:
+                self.aliasDict[self.username] = {}
+            self.aliasDict[self.username][alias1] = alias2
+            self.check_for_messages = True
+            self.executing = False
+            return alias1, alias2
         else:
             self.check_for_messages=False
             self.s.send(inp.encode())
@@ -123,3 +157,8 @@ class Executer(object):
 
     def not_logged_in(self) -> bool:
         return self.username==""
+
+    def on_exit(self):
+        with open(self.alias_url,'w') as f:
+            json.dump(self.aliasDict,f)
+        self.s.close()

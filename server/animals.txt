@@ -1,521 +1,375 @@
-Canidae
-Felidae
-Cat
-Cattle
-Dog
-Donkey
+Mink
 Goat
-Guinea pig
-Horse
-Pig
-Rabbit
-Fancy rat varieties
-laboratory rat strains
-Sheep breeds
-Water buffalo breeds
-Chicken breeds
-Duck breeds
-Goose breeds
-Pigeon breeds
-Turkey breeds
-Aardvark
-Aardwolf
-African buffalo
-African elephant
-African leopard
-Albatross
-Alligator
-Alpaca
-American buffalo (bison)
-American robin
-Amphibian
-list
-Anaconda
-Angelfish
-Anglerfish
-Ant
-Anteater
-Antelope
-Antlion
-Ape
-Aphid
-Arabian leopard
-Arctic Fox
-Arctic Wolf
-Armadillo
-Arrow crab
-Asp
-Ass (donkey)
-Baboon
-Badger
-Bald eagle
-Bandicoot
-Barnacle
-Barracuda
-Basilisk
-Bass
-Bat
-Beaked whale
-Bear
-list
-Beaver
-Bedbug
-Bee
-Beetle
-Bird
-list
-Bison
-Blackbird
-Black panther
-Black widow spider
-Blue bird
-Blue jay
-Blue whale
-Boa
-Boar
-Bobcat
-Bobolink
-Bonobo
-Booby
-Box jellyfish
-Bovid
-Buffalo, African
-Buffalo, American (bison)
-Bug
-Butterfly
-Buzzard
-Camel
-Canid
-Cape buffalo
-Capybara
-Cardinal
-Caribou
-Carp
-Cat
-list
-Catshark
-Caterpillar
-Catfish
-Cattle
-list
-Centipede
-Cephalopod
-Chameleon
-Cheetah
-Chickadee
-Chicken
-list
-Chimpanzee
-Chinchilla
-Chipmunk
-Clam
-Clownfish
-Cobra
-Cockroach
-Cod
-Condor
-Constrictor
-Coral
-Cougar
-Cow
-Coyote
-Crab
-Crane
-Crane fly
-Crawdad
-Crayfish
-Cricket
-Crocodile
-Crow
-Cuckoo
-Cicada
-Damselfly
-Deer
-Dingo
-Dinosaur
-list
-Dog
-list
-Dolphin
-Donkey
-list
-Dormouse
-Dove
-Dragonfly
-Dragon
-Duck
-list
-Dung beetle
+Prawn
+Sheep
+Gopher
+Parrot
 Eagle
-Earthworm
-Earwig
-Echidna
-Eel
+Shark
+Warbler
+Catshark
+Jaguar
+Butterfly
+Tick
+Magpie
+Sloth
 Egret
-Elephant
-Elephant seal
-Elk
-Emu
-English pointer
-Ermine
-Falcon
-Ferret
-Finch
-Firefly
-Fish
-Flamingo
-Flea
-Fly
-Flyingfish
-Fowl
-Fox
+Dormouse
+Cow
+Bison
+Bonobo
+Pelican
+Heron
+Limpet
+list
+Parakeet
+Hoverfly
+Marmoset
+Jellyfish
+Hedgehog
+list
+Crawdad
+Ptarmigan
+Bear
+Guanaco
+Wolverine
+Baboon
+Amphibian
+Donkey
+Whale
+Angelfish
 Frog
-Fruit bat
-Gamefowl
+Anaconda
+Bandicoot
+Cheetah
+Donkey
+Monkey
+Lynx
+Seahorse
+Spoonbill
 list
-Galliform
+Scorpion
+Barnacle
+Guppy
+Cod
+Tiger
+Dragonfly
+Bobcat
+Stork
+Vole
 list
+Slug
+Whippet
+Ostrich
+Ferret
+Pony
+Impala
+Cardinal
+Possum
+Cat
+Blackbird
+Locust
+Piranha
+Hyena
+Chipmunk
+Clownfish
+Salmon
+list
+Opossum
+Turtle
+Cricket
+Urial
+Silkworm
+Camel
+Lemming
+Viper
+Mosquito
+Stoat
+Wolf
+Halibut
+Fox
+Leopard
+Gorilla
+Orangutan
+Echidna
+Ermine
+Mandrill
+Ape
+Leopon
+Smelt
 Gazelle
-Gecko
-Gerbil
-Giant panda
-Giant squid
-Gibbon
-Gila monster
-Giraffe
-Goat
+Donkey
+Pike
+Lemur
+Cattle
+Clam
+Quelea
+Panther
+Felidae
+Rooster
+Badger
+Deer
+Cougar
+Raccoon
 list
-Goldfish
+Horse
+Wren
+Newt
+list
+Turkey
+Mammal
+Flea
+Platypus
+list
+Dragon
+Guan
+Sailfish
+Muskox
+Earthworm
+Jackal
+Bedbug
+Pigeon
+Gecko
+Marmot
+Mite
+Cat
+Haddock
+Skunk
+Damselfly
+Rat
+Tern
+Tapir
+Hornet
+Hookworm
+Vulture
+Pig
+Earwig
+Cat
+Yak
+Orca
+Antlion
+Whitefish
+Bovid
+Gull
+Ocelot
+Crane
+Llama
+Peacock
+Chicken
+Dog
+Swordfish
+Wildfowl
+Crayfish
+Koala
 Goose
 list
-Gopher
-Gorilla
-Grasshopper
-Great blue heron
-Great white shark
-Grizzly bear
-Ground shark
-Ground sloth
-Grouse
-Guan
 list
-Guanaco
-Guineafowl
-list
-Guinea pig
-list
-Gull
-Guppy
-Haddock
-Halibut
-Hammerhead shark
-Hamster
-Hare
-Harrier
-Hawk
-Hedgehog
-Hermit crab
-Heron
-Herring
-Hippopotamus
-Hookworm
-Hornet
-Horse
-list
-Hoverfly
-Hummingbird
-Humpback whale
-Hyena
-Iguana
-Impala
-Irukandji jellyfish
-Jackal
-Jaguar
-Jay
-Jellyfish
-Junglefowl
-Kangaroo
-Kangaroo mouse
-Kangaroo rat
-Kingfisher
-Kite
-Kiwi
-Koala
-Koi
-Komodo dragon
-Krill
-Ladybug
-Lamprey
-Landfowl
-Land snail
-Lark
-Leech
-Lemming
-Lemur
-Leopard
-Leopon
-Limpet
-Lion
-Lizard
-Llama
-Lobster
-Locust
-Loon
-Louse
-Lungfish
-Lynx
-Macaw
-Mackerel
-Magpie
-Mammal
-Manatee
-Mandrill
-Manta ray
-Marlin
-Marmoset
-Marmot
-Marsupial
-Marten
+Flamingo
+Ferret
 Mastodon
-Meadowlark
-Meerkat
-Mink
-Minnow
-Mite
-Mockingbird
-Mole
-Mollusk
-Mongoose
-Monitor lizard
-Monkey
-Moose
-Mosquito
-Moth
-Mountain goat
-Mouse
-Mule
-Muskox
-Narwhal
-Newt
-New World quail
-Nightingale
-Ocelot
-Octopus
-Old World quail
-Opossum
-Orangutan
-Orca
-Ostrich
-Otter
-Owl
-Ox
-Panda
-Panther
-Panthera hybrid
-Parakeet
-Parrot
-Parrotfish
-Partridge
-Peacock
-Peafowl
-Pelican
-Penguin
-Perch
-Peregrine falcon
-Pheasant
-Pig
-Pigeon
-list
-Pike
-Pilot whale
-Pinniped
-Piranha
-Planarian
-Platypus
-Polar bear
-Pony
-Porcupine
-Porpoise
-Portuguese man o' war
-Possum
-Prairie dog
-Prawn
-Praying mantis
-Primate
-Ptarmigan
+Crocodile
 Puffin
-Puma
-Python
-Quail
-Quelea
+Swift
+Alpaca
+Mouse
+Landfowl
+Reindeer
+Squid
+Armadillo
+Dog
+Bat
+Rook
+Cicada
+Sturgeon
+list
+Koi
+Booby
+list
+Lion
+Antelope
+Moth
+Loon
+Boar
+Cuckoo
+Duck
+list
+Cobra
+Aardwolf
+Tahr
+Swan
+Cockroach
+list
 Quokka
+Mole
+Finch
+Canidae
+list
+Moose
+Yak
+Bass
+Chickadee
+Cattle
+Wildcat
+Cattle
+Bee
+Wallaby
+Elk
+Firefly
+Dingo
+Octopus
+Lobster
+Pig
+Ox
+Krill
+list
+Tiglon
+Guppy
+Herring
+Swordtail
+Carp
+Snake
+Ant
+Mollusk
+Dolphin
+Meerkat
+Falcon
+Horse
+Aphid
+Gerbil
+Snipe
+Wasp
+Aardvark
+Porcupine
+Crab
+Puma
+Thrush
+Peafowl
+Bobolink
+Horse
+Weasel
+Perch
+Asp
+Giraffe
+Roundworm
+list
+Squirrel
+Alligator
+Macaw
+Hare
+Worm
+Panda
+Canid
+Dinosaur
+Galliform
+Chameleon
+Marsupial
+Partridge
+list
+Kite
+Marlin
+Barracuda
+list
+Grouse
+Xerinae
+Capybara
+Porpoise
+Sparrow
+Reptile
+Planarian
+Beetle
+Shrew
+list
+Primate
+Crow
+Ladybug
+Termite
+Quail
+Pheasant
+Spider
+Tuna
+Elephant
+Gibbon
+Leech
+Mackerel
+Goat
+Tarantula
+Lark
+Harrier
+Sole
+Centipede
+Alpaca
+Bird
+Llama
+Shrimp
+Minnow
+Goldfish
+Scallop
+Fowl
+Trout
+Gayal
+Narwhal
+Hamster
+Bug
+Jay
+Koi
+Zebra
+Pinniped
+Kangaroo
+Tortoise
+Catfish
+Takin
+Rabbit
+Sawfish
+Toad
 Rabbit
 list
-Raccoon
-Rainbow trout
-Rat
-Rattlesnake
-Raven
-Ray (Batoidea)
-Ray (Rajiformes)
-Red panda
-Reindeer
-Reptile
-Rhinoceros
-Right whale
-Roadrunner
-Rodent
-Rook
-Rooster
-Roundworm
-Saber-toothed cat
-Sailfish
-Salamander
-Salmon
-Sawfish
-Scale insect
-Scallop
-Scorpion
-Seahorse
-Sea lion
-Sea slug
-Sea snail
-Shark
-list
-Sheep
-list
-Shrew
-Shrimp
-Silkworm
-Silverfish
-Skink
-Skunk
-Sloth
-Slug
-Smelt
-Snail
-Snake
-list
-Snipe
-Snow leopard
-Sockeye salmon
-Sole
-Sparrow
-Sperm whale
-Spider
-Spider monkey
-Spoonbill
-Squid
-Squirrel
-Starfish
-Star-nosed mole
-Steelhead trout
+Dove
+Buzzard
+Lungfish
+Python
+Beaver
+Eel
+Anteater
 Stingray
-Stoat
-Stork
-Sturgeon
-Sugar glider
-Swallow
-Swan
-Swift
-Swordfish
-Swordtail
-Tahr
-Takin
-Tapir
-Tarantula
 Tarsier
-Tasmanian devil
-Termite
-Tern
-Thrush
-Tick
-Tiger
-Tiger shark
-Tiglon
-Toad
-Tortoise
-Toucan
-Trapdoor spider
-Tree frog
-Trout
-Tuna
-Turkey
-list
-Turtle
-Tyrannosaurus
-Urial
-Vampire bat
-Vampire squid
-Vicuna
-Viper
-Vole
-Vulture
-Wallaby
-Walrus
-Wasp
-Warbler
-Water Boa
-Water buffalo
-Weasel
-Whale
-Whippet
-Whitefish
-Whooping crane
-Wildcat
-Wildebeest
-Wildfowl
-Wolf
-Wolverine
-Wombat
-Woodpecker
-Worm
-Wren
-Xerinae
-X-ray fish
-Yak
-Yellow perch
-Zebra
-Zebra finch
-Animals by number of neurons
-Animals by size
-Common household pests
-Common names of poisonous animals
-Alpaca
-Bali cattle
-Cat
-Cattle
+Otter
 Chicken
-Dog
-Domestic Bactrian camel
-Domestic canary
-Domestic dromedary camel
-Domestic duck
-Domestic goat
-Domestic goose
-Domestic guineafowl
-Domestic hedgehog
-Domestic pig
-Domestic pigeon
-Domestic rabbit
-Domestic silkmoth
-Domestic silver fox
-Domestic turkey
-Donkey
-Fancy mouse
-Fancy rat
-Lab rat
-Ferret
-Gayal
+Fish
+Skink
+Raven
+Coral
+Mule
+Manatee
+Starfish
+Condor
+Lamprey
+Coyote
+Fly
+Gamefowl
+Louse
+Iguana
 Goldfish
-Guinea pig
-Guppy
-Horse
-Koi
-Llama
-Ringneck dove
 Sheep
-Siamese fighting fish
-Society finch
-Yak
-Water buffalo
+Owl
+Hawk
+Wombat
+Walrus
+Emu
+Penguin
+list
+Dog
+Albatross
+Rodent
+Kiwi
+Toucan
+list
+Mongoose
+list
+Vicuna
+Lizard
+Boa
+Snail
+Marten
+Caribou
+Swallow
+Basilisk
