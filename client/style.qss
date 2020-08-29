@@ -49,6 +49,16 @@ QComboBox
 	padding: 10px;
 }
 
+QComboBox::Item
+{
+    background-color: #1e8eca;
+	color: #f1c724;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #1e4b6d;
+	max-height: 30px;
+}
+
 /*-----QPushButton-----*/
 QPushButton
 {
@@ -210,4 +220,7 @@ QCheckBox::indicator:disabled
 }
 
 
-
+QTextEdit
+{
+    border: 2px solid #2affed
+}

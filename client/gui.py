@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from threading import Thread
 from time import sleep
 import re
+import json
 from passwordStrength import PasswordStrengthChecker
 import sys
 import faulthandler
@@ -96,9 +97,33 @@ class ChatWindow(QWidget):
         self.to_user = QComboBox(self)
         self.match_button = QPushButton("Match")
         self.match_button.pressed.connect(self.match)
-        self.layout.addWidget(self.to_user,1,0)
-        self.layout.addWidget(self.match_button,1,1)
-        self.layout.addWidget(self.message,1,2)
+        self.layout.addWidget(self.to_user,2,0)
+        self.layout.addWidget(self.match_button,2,1)
+        self.layout.addWidget(self.message,2,2)
+        self.colors_layout = QHBoxLayout(self)
+        self.yellow_button = QPushButton("")
+        self.yellow_button.setStyleSheet("background-color:#FFCD48")
+        self.orange_button = QPushButton("")
+        self.orange_button.setStyleSheet("background-color:#F28437")
+        self.red_button = QPushButton("")
+        self.red_button.setStyleSheet("background-color:#DE4557")
+        self.purple_button = QPushButton("")
+        self.purple_button.setStyleSheet("background-color:#B940E5")
+        self.blue_button = QPushButton("")
+        self.blue_button.setStyleSheet("background-color:#55A5FD")
+        self.light_blue_button = QPushButton("")
+        self.light_blue_button.setStyleSheet("background-color:#1AD3FB")
+        self.green_button = QPushButton("")
+        self.green_button.setStyleSheet("background-color:#A4DB47")
+        self.colors_layout.addWidget(self.yellow_button)
+        self.colors_layout.addWidget(self.orange_button)
+        self.colors_layout.addWidget(self.red_button)
+        self.colors_layout.addWidget(self.purple_button)
+        self.colors_layout.addWidget(self.blue_button)
+        self.colors_layout.addWidget(self.light_blue_button)
+        self.colors_layout.addWidget(self.green_button)
+        self.init_colors()
+        self.layout.addLayout(self.colors_layout,1,0,1,3)
         self.layout.setColumnStretch(2,4)
         self.layout.setColumnStretch(1,1)
         self.layout.setColumnStretch(0,2)
@@ -107,11 +132,34 @@ class ChatWindow(QWidget):
         thread = Thread(target=self.fetch_new_messages, daemon=True)
         thread.start()
 
+    def init_colors(self):
+        with open("colorsconfig.json","r") as f:
+            color_data = json.load(f)
+        self.yellow_button.setText(color_data["yellow"]["about"])
+        self.yellow_button.pressed.connect(lambda:self.send_color_thread("yellow"))
+        self.orange_button.setText(color_data["orange"]["about"])
+        self.orange_button.pressed.connect(lambda:self.send_color_thread("orange"))
+        self.red_button.setText(color_data["red"]["about"])
+        self.red_button.pressed.connect(lambda:self.send_color_thread("red"))
+        self.blue_button.setText(color_data["blue"]["about"])
+        self.blue_button.pressed.connect(lambda:self.send_color_thread("blue"))
+        self.light_blue_button.setText(color_data["light-blue"]["about"])
+        self.light_blue_button.pressed.connect(lambda:self.send_color_thread("light-blue"))
+        self.green_button.setText(color_data["green"]["about"])
+        self.green_button.pressed.connect(lambda:self.send_color_thread("green"))
+        self.purple_button.setText(color_data["purple"]["about"])
+        self.purple_button.pressed.connect(lambda:self.send_color_thread("purple"))
+        self.color_data = color_data
+        self.orig_color_data = color_data
+
     def send_message_thread(self):
         if self.server_exec.not_logged_in():
             print("log in first!")
             self.not_logged_in_popup()
             self.loginWindow.show()
+            return
+        if self.to_user.count() == 0:
+            self.not_matched_popup()
             return
         sendThread = Thread(target=self.send_message)
         sendThread.start()
@@ -126,9 +174,49 @@ class ChatWindow(QWidget):
         index = self.to_user.findText(target_alias,Qt.MatchFixedString)
         self.to_user.setCurrentIndex(index)
 
+    def get_mg(self,color):
+        return f"{self.color_data[color]['details']}"
+
+    def suggest(self,msg):
+        msg = msg.lower()
+        for rsp in self.color_data['responses']:
+            if rsp in msg:
+                self.color_data['yellow']['details'] = self.color_data['responses'][rsp]['details']
+                self.yellow_button.setText(self.color_data['responses'][rsp]['about'])
+                return self.color_data['responses'][rsp]
+        return False
+
+    def send_color_thread(self,color):
+        if self.server_exec.not_logged_in():
+            print("log in first!")
+            self.not_logged_in_popup()
+            self.loginWindow.show()
+            return
+        if self.to_user.count() == 0:
+            self.not_matched_popup()
+            return
+        sendThread = Thread(target=self.send_color(color))
+        sendThread.start()
+
+    def send_color(self,color):
+        html_resp = f"<span style=\"color:#ffffff\">[to <i>{self.to_user.currentText()}</i>]:{self.get_mg(color)}</span>"
+        tc = self.text_area.textCursor()
+        form = tc.charFormat()
+        form.setForeground(Qt.green)
+        tc.setCharFormat(form)
+        tc.insertHtml(html_resp)
+        self.text_area.append("")
+        self.message.clear()
+        while True:
+            r = self.server_exec.exec_(f"send {self.to_user.currentText()} {self.get_mg(color)}")
+            if not r:
+                continue
+            print(f"{self.server_exec.username}:sent!")
+            sleep(0.1)
+            break
+
     def send_message(self):
         html_resp = f"<span style=\"color:#ffffff\">[to <i>{self.to_user.currentText()}</i>]:{self.message.text()}</span>"
-        self.last_sender = ""
         tc = self.text_area.textCursor()
         form = tc.charFormat()
         form.setForeground(Qt.green)
@@ -156,6 +244,13 @@ class ChatWindow(QWidget):
         msg.setIcon(QMessageBox.Critical)
         x = msg.exec_()
 
+    def not_matched_popup(self):
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Matched")
+        msg.setText("Please hit the match button to match with someone")
+        msg.setIcon(QMessageBox.Critical)
+        x = msg.exec_()
+
     def get_cur_sender(self,msg):
         for i in range(len(msg)):
             if msg[i:i+1] == ']':
@@ -178,6 +273,7 @@ class ChatWindow(QWidget):
                 self.text_area.textCursor().insertHtml(f"<h3 style=\"color:#ffff00\">sender: {self.cur_sender}</h3>")
                 self.text_area.append("")
             self.text_area.textCursor().insertHtml(f"<span style=\"color:#ffffff\">{cur_msg}</span>")
+            self.suggest(cur_msg)
             self.text_area.append("")
             self.last_sender = self.cur_sender
 

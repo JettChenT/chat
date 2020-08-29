@@ -1,9 +1,9 @@
 import socket
 import os
 import json
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
-from Crypto import Random
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Cipher import PKCS1_OAEP
+from Cryptodome import Random
 from codecs import encode
 
 

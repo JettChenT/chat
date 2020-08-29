@@ -1,12 +1,192 @@
-#beta 1(not anonymous version)
+# RT App创新大赛陈天睿作品：聊天软件
 
-Clone this repo and cd into the client folder
+## 产品设计
 
-open your terminal
-run `pip install requirements.txt`
-and after installation,
-create a folder called `keys`, under the folder, 
-create a folder called `private` and another one called 
-`public`
+这款聊天软件为匿名/陌生人聊天软件。我希望能通过这个软件帮主更多人在尽量短的时间内认识尽量多的朋友，并且解决”没有人聊天“这一问题。软件采用了随机匹配机制，每一次匹配到的人都不会显示用户名，而会显示一个随机生成的假名。匹配到人之后，用户间可以随意聊天，聊的好的话用户可以自行安全得分享互相的沟通信息，不然的话，用户也可以选择直接匹配下面一个人。为了聊天更快捷方便，软件加入了推荐回复功能，用户只需点击一个按钮就可以快速快速发送聊天常用语/推荐用语。
 
-and then, run the program: `python gui.py`
+## 安装/运行方法
+
+1. 进入 client 文件夹
+2. 运行 `pip install -r requirements.txt`
+3. 如果没有的话，请创建一个叫`keys`的文件夹，并在`keys`里分别创建叫`public`和叫`private`的文件夹
+4. 在client文件夹下运行：`python gui.py`
+
+## 使用方法
+
+### 注册/登录
+
+
+
+![Screen Shot 2020-08-21 at 8.37.52 AM](/Users/jettchen/Library/Application Support/typora-user-images/Screen Shot 2020-08-21 at 8.37.52 AM.png)
+
+1. 在这个窗口上输入自己想要的用户名以及密码，并点击register注册
+2. 注册后，输入自己的用户名以及密码，点击login登录，窗口会自己关闭
+
+### 聊天
+
+![Screen Shot 2020-08-27 at 4.21.56 PM](/Users/jettchen/Desktop/Screen Shot 2020-08-27 at 4.21.56 PM.png)
+
+1. 点击Match按钮随机匹配人
+2. 在右边提示“Enter your message"的地方输入你要发送的信息
+3. 按Enter发送
+4. 也可以点击中间栏里面的任意发送快捷/推荐信息
+5. 如果有多个联系人，在下拉菜单里面选择目标联系人
+
+## 推荐/常用回复栏
+
+聊天界面中，中间一栏有七个按钮，其中后面六个是常用用于，第一个是实时更新的推荐回复。程序会更具用户收到的消息来推荐使用的回复，用户也可以在colorconfig.json里面自定义自己的回复。这七个按钮中最后一个叫“Exchange",点击这个按钮会发送一个消息，向对方请求交换互相的联系信息。
+
+文件夹里还有一个colorconfig-zh.json,用它替换colorconfig.json即可使用中文推荐/常用回复栏。
+
+## 信息安全
+
+作为一个聊天软件，必须得要考虑信息安全以及加密算法。这一款聊天软件的用户数据以及聊天信息都经过业界内公认的加密过程。
+
+### 用户数据
+
+首先，作为匿名聊天软件，软件没有采集任何用户个人数据，唯一”有风险“的数据就是用户密码。用户密码的储存使用了hash+salt的方式。具体过程为：
+
+1. 生成随机字符串(salt)
+2. 将随机字符串和密码拼接
+3. 进行100000次SHA256迭代
+4. 将结果和salt储存在数据库里面
+
+密码验证过程为：
+
+1. 从数据库里获取salt
+2. 将salt和要验证的密码拼接
+3. 进行100000次SHA256迭代
+4. 和数据库里面储存的结果比较，如果相等，则密码正确
+
+这样做的好处在于：
+
+1. 防止黑客从数据库直接获取密码
+2. 减慢黑客暴力破解(bruteforce)的速度
+3. 防止黑客直接拿哈希值和已有被破解密码哈希值列表对照
+
+### 聊天信息
+
+聊天信息采用了RSA 的端对端加密措施。
+
+在用户注册时，会生成 public key(公共密钥) 上传到服务器 和 private key(私密密钥) 保存在本地。当发送信息时，会先看缓存里面有没有对方的public key, 没有的话会在本地查找有没有保存过对方的public key，仍然没有的话会从服务器获取 public key, 保存到本地和缓存。
+
+发送信息时，会把信息先通过对方的public key 加密，再传输到服务器并加到对方的信息队列(message queue)里面。
+
+接收信息时，会把接收到的信息通过保存在本地的private key解密。一旦接收信息，加密过的聊天信息会从信息队列里面删除。
+
+这个机制保证了没有中间人，包括服务器可以获取用户的聊天信息，所有的加密和解密都在客户端完成。
+
+## 数据
+
+### 服务器端
+
+服务器里数据储存全部采用了redis 数据库，具有高性能，多数据类型的好处。服务器内总共有三个数据库：聊天队列数据库，用户数据库，和假名数据库。
+
+#### 聊天队列数据库
+
+聊天队列的实现较为简单，使用了redis提供的列表。
+
+添加信息时，往列表结尾添加信息，提取信息时直接从列表提取并删除信息
+
+每一个聊天队列都以用户名的hash值命名。
+
+#### 用户数据库
+
+用户数据库使用了redis的hashmap结构，key为用户名的hash值，其中：
+
+- 键值 ”username" 对应用户名
+- 键值 “pw"对应加密后的密码
+- 键值“salt“对应加密时用的salt
+- 键值“pub_key"对应公共密钥（public key)
+- 键值“online"对应用户是否在线（"True"/"False"）
+
+用户数据库里面存储在线用户的集合。
+
+#### 假名数据库
+
+假名数据库使用了redis的hashmap结构，key为用户名的hash值，其中每一个键值都是匹配到的一个假名，对应的是用户名。
+
+### 客户端
+
+由于让用户使用一个完整的数据库比较麻烦，客户端的数据储存使用文件储存。
+
+公开密钥和私密密钥分别储存在 keys/public 和 keys/private 上，聊天常用语以及假名都储存在 .json 格式的文件夹里面
+
+## 程序结构/流程
+
+### 服务器
+
+服务器主要有4个模块
+
+#### users.py 模块
+
+Users.py 主要用于处理用户有关的操作，如注册/登录，获取公共密钥等。同时 users.py 也负责redis用户数据库数据的写入和读出，以及匹配功能。
+
+####  messages.py 模块
+
+messages.py 主要负责聊天消息的传递，储存，以及读出。同时messages.py也负责redis聊天队列数据库的数据处理。
+
+#### alias.py 模块
+
+alias.py负责生成假名，储存假名，查询假名等和假名有关的操作。同时alias.py也负责redis假名数据库的数据读入独处。alias.py 由 users.py 直接调用，为匹配功能不可缺少的一部分。
+
+#### server.py
+
+server.py 是主程序，主要负责socket tcp服务器的运行，包括发送/接收数据。server.py 会处理接收到的数据并解释客户端发出的指令，然后调用users.py 或者 messages.py 完成一系列的操作，最后发送一个回应到客户端。
+
+server.py 通讯协议：
+
+客户端发送一个如下格式的指令,以空格分开：
+
+"<指令类别> <指令参数>..."
+
+服务器按照空格split, 识别指令类别，并把剩余的当作参数传入指令类别对应的方程。
+
+server.py 使用了多线程来处理多个客户端同时连接服务器，每一个连接都是一个线程。
+
+#### 流程图
+
+![chatAppServer](/Users/jettchen/Downloads/chatAppServer.jpg)
+
+### 客户端
+
+客户端的程序结构主要分为两个部分：executer 和 gui。
+
+#### executer.py 
+
+Executer 部分主要实现网络通讯数据的发送，接收，加密，解密以及处理。首先，executer.py会接收有gui发送的一条指令，如：'login <用户名> <密码>', 会把这一条指令发送到服务器，并接收服务器返回的信息，对信息作一定的处理，发送给 gui 显示给用户。
+
+比如，在注册的时候，executer不仅负责吧数据发送到服务器并接收数据，executer还负责生成 private key 和 public key, 把public key发送到服务器，以及把private key 储存到本地。
+
+#### gui.py
+
+gui.py 主要负责qt图形界面的处理以及信息的显示。由于要实时接收并发送数据，gui 使用了多线程调用executer接收消息以及发送消息，这样不会减慢程序或导致程序未响应。gui.py 会接收用户“输入”，生成executer.py能解释的指令调用executer.py和服务器通讯，然后executer.py会返回数据/状态信息给gui.py，gui.py把信息显示到窗口上。
+
+#### 流程图
+
+![chatAppClient](/Users/jettchen/Downloads/chatAppClient.jpg)
+
+## 相关资源文件说明
+
+### 第三方包
+
+#### 客户端
+
+1. Pyqt5 : python图形界面包，和tk相似
+
+2. Pycroptodomex: python 密码学包，提供通用的加密算法
+
+   requirements.txt 里面其他的包都为pyqt5 或 pycroptodomex的依赖包
+
+#### 服务器
+
+1. Redis-py: 提供在python里使用redis数据库的功能
+
+### 程序使用的资源文件
+
+1. style.qss： pyqt 的一个主题，类似于css。个人做了一定的修改
+2. .json 文件：程序读取/写出的文件，相当于.txt,不过可以直接读成一个字典
+3. keys/ 文件夹内的文件：用于储存上文描述的公共密钥和私密密钥
+
+
+
